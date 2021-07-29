@@ -1,0 +1,16 @@
+-- Доработка тестовых данных
+show tables;
+select * from games;
+
+-- Таблица communities
+UPDATE communities SET updated_at = NOW() WHERE updated_at < created_at;
+
+-- Таблица friendship
+UPDATE friendship SET updated_at = NOW() WHERE updated_at < created_at;
+UPDATE friendship SET confirmed_at = updated_at WHERE confirmed_at < created_at;
+UPDATE friendship SET friend_id = friend_id + 1 WHERE user_id = friend_id;
+
+-- Таблица messages 
+UPDATE messages SET to_user_id = to_user_id + 1 where from_user_id = to_user_id;
+UPDATE messages SET delivered_at = NULL WHERE is_delivered IS FALSE;
+UPDATE messages SET delivered_at = created_at WHERE delivered_at > created_at AND delivered_at IS NOT NULL;
