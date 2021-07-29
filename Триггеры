@@ -1,0 +1,38 @@
+-- ТРИГГЕРЫ
+DELIMITER // 
+
+-- У каждой игры должно быть название и описание
+CREATE TRIGGER check_name_description_game_genre_id BEFORE INSERT ON games
+FOR EACH ROW BEGIN 
+	IF new.name IS NULL AND new.description IS NULL AND new.game_genre_id THEN
+	SIGNAL SQLSTATE '45000'
+	SET message_text = 'Both name and description are NULL';
+	END IF;
+END//
+
+-- Емейл и страну обязательно нужно указывать при регистрации
+CREATE TRIGGER check_email_country_id BEFORE INSERT ON users
+FOR EACH ROW BEGIN 
+	IF new.email IS NULL AND new.country_id IS NULL THEN
+	SIGNAL SQLSTATE '45000'
+	SET message_text = 'Both email and country are NULL';
+	END IF;
+END//
+
+-- При удалении юзера должно удаляться соответствующее отношение в таблице user_library
+CREATE TRIGGER delete_user_library_user_id AFTER DELETE on users
+FOR EACH ROW
+BEGIN
+DELETE FROM user_library
+    WHERE user_library.user_id = old.id;
+END//
+
+-- При удалении игры должно удаляться соответствующее отношение в таблице user_library
+CREATE TRIGGER delete_user_library_game_id AFTER DELETE on games
+FOR EACH ROW
+BEGIN
+DELETE FROM user_library
+    WHERE user_library.user_id = old.id;
+END//
+
+DELIMITER ;
