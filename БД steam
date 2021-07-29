@@ -1,0 +1,103 @@
+-- Таблица аккаунтов
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+email VARCHAR(320) NOT NULL UNIQUE,
+country_id INT UNSIGNED);
+
+-- Таблица стран
+DROP TABLE IF EXISTS countries;
+CREATE TABLE countries (
+id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(150) NOT NULL);
+
+-- Таблица профилей
+DROP TABLE IF EXISTS profiles;
+CREATE TABLE profiles (
+user_id INT UNSIGNED NOT NULL PRIMARY KEY,
+profile_name VARCHAR(100) NOT NULL,
+real_name VARCHAR(150),
+city_id INT UNSIGNED,
+summary TINYTEXT COMMENT "User information");
+
+-- Таблица городов
+DROP TABLE IF EXISTS cities;
+CREATE TABLE cities (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  country_id INT UNSIGNED);
+
+-- Таблица дружбы
+DROP TABLE IF EXISTS friendship;
+CREATE TABLE friendship (
+ user_id INT UNSIGNED NOT NULL COMMENT "friendship initiator link",
+ friend_id INT UNSIGNED NOT NULL COMMENT "link to the recipient of the invitation",
+ friendship_status ENUM('Requested', 'Confirmed', 'Rejected') NOT NULL,
+ confirmed_at DATETIME,
+ created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+ updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  
+ PRIMARY KEY (user_id, friend_id));
+ 
+-- Таблица игр
+DROP TABLE IF EXISTS games;
+CREATE TABLE games (
+id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(150) NOT NULL UNIQUE,
+price decimal(6,2) NOT NULL,
+size INT NOT NULL,
+description TEXT NOT NULL,
+game_genre_id INT UNSIGNED NOT NULL,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP);
+
+-- Таблица для жанров игр
+DROP TABLE IF EXISTS game_genre;
+CREATE TABLE game_genre (
+id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(50) NOT NULL UNIQUE);
+
+-- Таблица библиотеки пользователя
+DROP TABLE IF EXISTS user_library;
+CREATE TABLE user_library (
+user_id INT UNSIGNED NOT NULL,
+game_id INT UNSIGNED NOT NULL,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+PRIMARY KEY (user_id, game_id));
+
+-- Таблица групп
+DROP TABLE IF EXISTS communities;
+CREATE TABLE communities (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL UNIQUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP);
+ 
+-- Таблица связи пользователей и групп
+DROP TABLE IF EXISTS communities_users;
+CREATE TABLE communities_users(
+ community_id INT UNSIGNED NOT NULL,
+ user_id INT UNSIGNED NOT NULL,
+ created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+ PRIMARY KEY (community_id, user_id));
+ 
+-- Таблица отзывов
+DROP TABLE IF EXISTS reviews;
+CREATE TABLE reviews(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+from_user_id INT UNSIGNED NOT NULL,
+game_id INT UNSIGNED NOT NULL,
+head VARCHAR(255),
+body TEXT NOT NULL,
+is_recommended BOOLEAN);
+
+-- Таблица сообщений
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+  from_user_id INT UNSIGNED NOT NULL,
+  to_user_id INT UNSIGNED NOT NULL,
+  body TEXT NOT NULL,
+  is_important BOOLEAN,
+  is_delivered BOOLEAN,
+  delivered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at DATETIME DEFAULT NOW());
