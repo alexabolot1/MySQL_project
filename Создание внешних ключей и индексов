@@ -1,0 +1,105 @@
+-- СОЗДАНИЕ ВНЕШНИХ КЛЮЧЕЙ
+
+-- Таблица users 
+ALTER TABLE users
+  ADD CONSTRAINT users_country_id_fk 
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+      ON DELETE RESTRICT;
+      
+-- Таблица user_library   
+ALTER TABLE user_library
+  ADD CONSTRAINT user_library_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+      
+ALTER TABLE user_library
+  ADD CONSTRAINT user_library_game_id_fk 
+    FOREIGN KEY (game_id) REFERENCES games(id)
+      ON DELETE CASCADE;
+     
+-- Таблица reviews
+ALTER TABLE reviews
+  ADD CONSTRAINT reviews_from_user_id_fk 
+    FOREIGN KEY (from_user_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+     
+ALTER TABLE reviews
+  ADD CONSTRAINT reviews_game_id_fk 
+    FOREIGN KEY (game_id) REFERENCES games(id)
+      ON DELETE CASCADE;
+
+-- Таблица profiles
+ALTER TABLE profiles
+  ADD CONSTRAINT profiles_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+     
+ALTER TABLE profiles
+  ADD CONSTRAINT profiles_city_id_fk 
+    FOREIGN KEY (city_id) REFERENCES cities(id)
+      ON DELETE SET NULL;
+     
+-- Таблица messages
+ALTER TABLE messages
+  ADD CONSTRAINT messages_from_user_id_fk 
+    FOREIGN KEY (from_user_id) REFERENCES users(id)
+      ON DELETE RESTRICT;
+     
+ALTER TABLE messages
+  ADD CONSTRAINT messages_to_user_id_fk 
+    FOREIGN KEY (to_user_id) REFERENCES users(id)
+      ON DELETE RESTRICT;
+
+-- Таблица games
+ALTER TABLE games
+  ADD CONSTRAINT games_game_genre_id_fk 
+    FOREIGN KEY (game_genre_id) REFERENCES game_genre(id)
+      ON DELETE RESTRICT;
+
+-- Таблица friendship
+ALTER TABLE friendship
+  ADD CONSTRAINT friendship_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+ 
+ALTER TABLE friendship
+  ADD CONSTRAINT friendship_friend_id_fk 
+    FOREIGN KEY (friend_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+     
+-- Таблица communities_users
+ALTER TABLE communities_users
+  ADD CONSTRAINT communities_users_community_id_fk 
+    FOREIGN KEY (community_id) REFERENCES communities(id)
+      ON DELETE CASCADE;
+
+ALTER TABLE communities_users
+  ADD CONSTRAINT communities_users_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+    
+-- Таблица cities
+ALTER TABLE cities
+  ADD CONSTRAINT cities_country_id_fk 
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+      ON DELETE RESTRICT;
+     
+
+     
+-- СОЗДАНИЕ ИНДЕКСОВ
+SHOW INDEX FROM communities;
+
+CREATE INDEX reviews_from_user_id_idx ON reviews(from_user_id);
+CREATE INDEX reviews_game_id_idx ON reviews(game_id);
+CREATE INDEX reviews_from_user_id_game_id_idx ON reviews(from_user_id,game_id);
+
+CREATE INDEX profiles_profile_name_inx ON profiles(profile_name);
+CREATE INDEX profiles_profile_name_real_name_inx ON profiles(profile_name,real_name);
+
+CREATE INDEX messages_from_user_id_idx ON messages(from_user_id);
+CREATE INDEX messages_to_user_id_idx ON messages(to_user_id);
+CREATE INDEX messages_to_user_id_from_user_id_idx ON messages(to_user_id,from_user_id);
+
+CREATE INDEX friendship_user_id_friend_id_friendship_status_idx
+ 	ON friendship(user_id, friend_id,friendship_status); 
+ 
