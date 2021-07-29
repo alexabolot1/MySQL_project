@@ -1,0 +1,44 @@
+-- СОЗДАНИЕ ПРЕДСТАВЛЕНИЙ
+select * from reviews;
+select * from view_reviews_for_game;
+show tables;
+
+-- Представление хранит данные о названии игры, цене и ее жанре
+CREATE VIEW view_game (games_name, price, game_genre) AS 
+SELECT games.name,
+games.price,
+game_genre.name
+FROM games
+	LEFT JOIN game_genre
+		ON games.game_genre_id = game_genre.id;
+	
+-- Представление хранит полную информацию о пользователе
+CREATE VIEW view_user_information (user_id, email, nickname, real_name, country, city) AS 
+SELECT 
+users.id,
+users.email,
+profiles.profile_name,
+profiles.real_name,
+countries.name,
+cities.name
+FROM users
+	JOIN profiles
+		ON users.id = profiles.user_id
+	JOIN countries
+		ON users.country_id = countries.id
+	JOIN cities
+		ON profiles.city_id = cities.id
+ORDER BY users.id;
+
+-- Представление хранит все отзывы на каждую игру, которая имеет хотя бы 1 отзыв
+CREATE VIEW view_reviews_for_game (game_name, from_user_id, head, body, is_recommended) AS
+SELECT
+games.name,
+reviews.from_user_id,
+reviews.head,
+reviews.body,
+reviews.is_recommended
+FROM games
+	JOIN reviews
+		ON games.id = reviews.game_id
+ORDER BY games.id;
