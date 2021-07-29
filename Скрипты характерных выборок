@@ -1,0 +1,55 @@
+-- СКРИПТЫ ХАРАКТЕРНЫХ ВЫБОРОК 
+
+-- Данная выборка показывает какие игры находятся в библиотеке у того или иного пользователя и цену этих игр.
+SELECT 
+users.id,
+profiles.profile_name,
+games.name as game_name,
+games.price as game_price
+FROM users
+	LEFT JOIN user_library
+		ON users.id = user_library.user_id
+	LEFT JOIN games
+		ON games.id = user_library.game_id
+	LEFT JOIN profiles
+		ON profiles.user_id = users.id
+WHERE user_library.user_id IS NOT NULL
+ORDER BY users.id;
+
+-- Данная выборка показывает всех пользователей с их никнеймом, настоящим именем и городом проживания.
+SELECT 
+user_id,
+concat(profile_name, ' - ', real_name) as name,
+(SELECT name FROM cities WHERE profiles.city_id = cities.id) as city
+FROM profiles
+ORDER BY user_id;
+
+-- Данная выборка показывает количество отзывов, игр и групп каждого пользователя
+SELECT 
+profiles.profile_name,
+COUNT(DISTINCT reviews.id) as total_reviews,
+COUNT(DISTINCT games.id) as total_games,
+COUNT(DISTINCT communities_users.community_id) as total_communities
+FROM users
+	LEFT JOIN reviews
+		ON users.id = reviews.from_user_id
+	LEFT JOIN user_library
+		ON users.id = user_library.user_id
+	LEFT JOIN games
+		ON games.id = user_library.game_id
+	LEFT JOIN communities_users
+		ON communities_users.user_id = users.id
+	LEFT JOIN profiles
+		ON users.id = profiles.user_id
+GROUP BY users.id
+ORDER BY users.id;
+
+-- Данная выборка показывает количество негативных и положительных отзывов к каждой игре
+SELECT 
+games.name as game_name,
+(SELECT COUNT(*) FROM reviews WHERE reviews.is_recommended IS TRUE AND reviews.game_id = games.id) as positive_reviews,
+(SELECT COUNT(*) FROM reviews WHERE reviews.is_recommended IS FALSE AND reviews.game_id = games.id) as negative_reviews
+FROM games
+	LEFT JOIN reviews
+		ON reviews.game_id = games.id
+GROUP BY games.name;
